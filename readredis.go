@@ -2,6 +2,8 @@ package readredis
 
 import (
 	"fmt"
+	"context"
+	"log"
 	"github.com/go-redis/redis/v8"
 )
 
