@@ -5,6 +5,8 @@ import (
 	"context"
 	"log"
 	"sync"
+	"runtime"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -12,7 +14,10 @@ import (
 func MyFunction() {
 	fmt.Println("Hello, this is readredis module!")
 }
+
+// use context
 var ctx = context.Background()
+
 
 func ProcessData() {
 	// Connect to Redis
@@ -30,7 +35,8 @@ func ProcessData() {
 
 	// Read data from Redis
 	iter := rdb.Scan(ctx,0,"*",0).Iterator()
-
+	runtime.GOMAXPROCS(1)
+	
 	var wg sync.WaitGroup
 
 	// Use goroutine to process each key
@@ -57,5 +63,6 @@ func ProcessData() {
 }
 
 func process(value string) string {
+	time.Sleep(time.Duration(1)*time.Second)
 	return "processed " + value
 }
