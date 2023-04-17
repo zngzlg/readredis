@@ -27,17 +27,23 @@ func ProcessData() {
 	}
 
 	// Read data from Redis
-	key := "example_key"
-	value, err := rdb.Get(ctx, key).Result()
-	if err != nil {
-		log.Fatalf("Error getting value from Redis: %v", err)
+	iter := rdb.Scan(ctx,0,"*",0).Iterator()
+
+	// Use goroutine to process each key
+	for iter.Next(ctx) {
+		go func(key string) {
+			value, err := rdb.Get(ctx, key).Result()
+			if err != nil {
+				log.Fatalf("Error getting value from Redis: %v", err)
+			}
+			result := process(value)
+			fmt.Printf("Processed result: %s\n", result)
+		}(iter.Val())
 	}
 
-	// Process the data
-	result := process(value)
-
-	// Return the result
-	fmt.Printf("Processed result: %s\n", result)
+	if err := iter.Err(); err != nil {
+		log.Fatalf("Error iterating keys: %v", err)
+	}
 }
 
 func process(value string) string {
