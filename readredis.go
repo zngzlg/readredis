@@ -10,6 +10,7 @@ import (
 func MyFunction() {
 	fmt.Println("Hello, this is readredis module!")
 }
+var ctx = context.Background()
 
 func ProcessData() {
 	// Connect to Redis
@@ -40,5 +41,5 @@ func ProcessData() {
 }
 
 func process(value string) string {
-	return "processed"
+	return "processed " + value
 }
